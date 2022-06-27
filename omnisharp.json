@@ -1,0 +1,25 @@
+{
+  "FormattingOptions": {
+    "newLine": "\n",
+    "useTabs": false,
+    "tabSize": 4,
+    "indentationSize": 4,
+    "NewLinesForBracesInLambdaExpressionBody": false,
+    "NewLinesForBracesInAnonymousMethods": true,
+    "NewLinesForBracesInAnonymousTypes":true,
+    "NewLinesForBracesInControlBlocks": true,
+    "NewLinesForBracesInTypes": true,
+    "NewLinesForBracesInMethods": true,
+    "NewLinesForBracesInProperties": true,
+    "NewLinesForBracesInAccessors": true,
+    "NewLineForElse": true,
+    "NewLineForCatch": true,
+    "NewLineForFinally": true
+  },
+  "RoslynExtensionsOptions": {
+    "EnableAnalyzersSupport": true,
+    "LocationPaths": [
+      "../../microsoft.unity.analyzers.1.13.0"
+    ]
+  }
+}

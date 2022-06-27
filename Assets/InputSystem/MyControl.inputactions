@@ -1,0 +1,67 @@
+{
+    "name": "MyControl",
+    "maps": [
+        {
+            "name": "Bathyscaphe",
+            "id": "b3fa2b1c-89c7-49f9-ae37-b09120337371",
+            "actions": [
+                {
+                    "name": "Move",
+                    "type": "Value",
+                    "id": "56dd855d-8a60-45ff-a5fa-58913d971082",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "2D Vector",
+                    "id": "89661d83-e772-453d-924a-87b91a9ca7bf",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "down",
+                    "id": "bd1eb2cb-7594-4597-a297-ae97459af181",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "1839024c-831a-4b44-9b39-db9ed2a43ed2",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "31407e0a-5d0e-4bde-8b69-873d1e17f4c3",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
