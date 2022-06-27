@@ -11,3 +11,10 @@ Control light: left mouse button press.
 Credits: Tarkin - game design
 
 Music Effect:https://freesound.org/
+
+
+## Graphics
+
+![s1](./Assets/Screens/explore.png)
+![s2](./Assets/Screens/sonar.png)
+![s2](./Assets/Screens/treasure.png)
