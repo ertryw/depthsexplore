@@ -18,6 +18,7 @@ public class SpriteRendererDoColor : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
+    
     public SpriteRendererDoColor DoColor()
     {
         tween = spriteRenderer.DOColor(color, duration).SetEase(ease);

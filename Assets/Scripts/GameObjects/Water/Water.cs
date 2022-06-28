@@ -28,12 +28,12 @@ public class Water : MonoBehaviour
 
     [SerializeField]
     private int objectCount;
-  
+
     [SerializeField]
     private int bombsCount;
 
     [SerializeField]
-    private int bombsDepthIncreaseDelta; 
+    private int bombsDepthIncreaseDelta;
 
     [SerializeField]
     private WaterObject[] waterObjectsPrefabs;
@@ -75,8 +75,8 @@ public class Water : MonoBehaviour
 
         bathyscaphe = FindObjectOfType<Bathyscaphe>();
         SpawnWaterObjects(objectCount, spawnRadius);
-        float depthAddBombs = bathyscaphe.data.depth < 0 ? (-bathyscaphe.data.depth / bombsDepthIncreaseDelta) : 0;      
-        SpawnBombs(bombsCount + (int)depthAddBombs, spawnRadius);  
+        float depthAddBombs = bathyscaphe.data.depth < 0 ? (-bathyscaphe.data.depth / bombsDepthIncreaseDelta) : 0;
+        SpawnBombs(bombsCount + (int)depthAddBombs, spawnRadius);
         bathyscapheIn = false;
     }
 
@@ -122,7 +122,7 @@ public class Water : MonoBehaviour
                 DestoryWater();
 
             yield return new WaitForSecondsRealtime(0.2f);
-        }  
+        }
     }
 
     private void InstantiateWater(Vector3 pos)
@@ -132,7 +132,7 @@ public class Water : MonoBehaviour
         if (hit.collider != null)
             return;
 
-        GameObject obj = Instantiate(waterPrefab, pos, Quaternion.identity, this.transform.parent); 
+        GameObject obj = Instantiate(waterPrefab, pos, Quaternion.identity, this.transform.parent);
         Water waterObj = obj.GetComponent<Water>();
         waterObj.dontDestory = false;
         obj.transform.SetAsFirstSibling();
@@ -140,13 +140,13 @@ public class Water : MonoBehaviour
 
     private void SpawnNeighbors()
     {
-        Vector3 newPositionDown = new Vector3(transform.position.x, transform.position.y - neighborsDistance, transform.position.z);     
+        Vector3 newPositionDown = new Vector3(transform.position.x, transform.position.y - neighborsDistance, transform.position.z);
         InstantiateWater(newPositionDown);
 
-        Vector3 newPositionLeftDown = new Vector3(transform.position.x - neighborsDistance, transform.position.y - neighborsDistance, transform.position.z); 
+        Vector3 newPositionLeftDown = new Vector3(transform.position.x - neighborsDistance, transform.position.y - neighborsDistance, transform.position.z);
         InstantiateWater(newPositionLeftDown);
 
-        Vector3 newPositionLeftDown2 = new Vector3(transform.position.x - (neighborsDistance * 2), transform.position.y - neighborsDistance, transform.position.z); 
+        Vector3 newPositionLeftDown2 = new Vector3(transform.position.x - (neighborsDistance * 2), transform.position.y - neighborsDistance, transform.position.z);
         InstantiateWater(newPositionLeftDown2);
 
         Vector3 newPositionRigthDown = new Vector3(transform.position.x + neighborsDistance, transform.position.y - neighborsDistance, transform.position.z);
@@ -172,8 +172,8 @@ public class Water : MonoBehaviour
             Vector3 newPosition = transform.position + new Vector3(randomPosition.x, randomPosition.y, 0);
 
             waterObjects.Add(Instantiate(objectsToInstantiate, newPosition, Quaternion.identity, this.transform.parent));
-            spawned++; 
-        }     
+            spawned++;
+        }
     }
 
     private void SpawnBombs(int count, float radius)
@@ -186,7 +186,7 @@ public class Water : MonoBehaviour
 
             WaterObject objectsToInstantiate = bombsObjectsPrefabs[UnityEngine.Random.Range(0, bombsObjectsPrefabs.Length)];
             trySpawn++;
-            
+
             if (trySpawn > count * 10)
                 break;
 
@@ -197,8 +197,8 @@ public class Water : MonoBehaviour
             Vector3 newPosition = transform.position + new Vector3(randomPosition.x, randomPosition.y, 0);
 
             waterObjects.Add(Instantiate(objectsToInstantiate, newPosition, Quaternion.identity, this.transform.parent));
-            spawned++; 
-        }     
-    }  
+            spawned++;
+        }
+    }
 
 }

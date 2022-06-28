@@ -39,7 +39,6 @@ public class BathyscapheRadar : MonoBehaviour
         pulseSpriteRenderer.gameObject.SetActive(bathyscaphe.data.statRadar.active);
     }
 
-
     private void OnEnable()
     {
         ButtonControl.OnChange += OnControlChange;

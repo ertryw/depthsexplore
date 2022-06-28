@@ -25,7 +25,6 @@ public class BathyscapheEnergyControl : MonoBehaviour
         StartCoroutine(EnergyConsumption());
     }
 
-
     private void OnEnable()
     {
         StatisticUI.OnChange += OnStatChange;

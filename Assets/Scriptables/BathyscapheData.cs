@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-using System.Threading.Tasks;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/BathyscapeData", order = 1)]
