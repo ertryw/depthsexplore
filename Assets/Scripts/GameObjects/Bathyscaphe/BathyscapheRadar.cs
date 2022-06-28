@@ -7,7 +7,7 @@ public class BathyscapheRadar : MonoBehaviour
 {
 
     [SerializeField]
-    private Transform pfRadarPing;
+    private Transform radarPingPrefab;
 
     [SerializeField]
     private LayerMask radarLayerMask;
@@ -116,7 +116,7 @@ public class BathyscapheRadar : MonoBehaviour
 
                     alreadyPingedColliderList.Add(raycastHit2D.collider);
 
-                    Transform radarPingTransform = Instantiate(pfRadarPing, raycastHit2D.collider.transform.position, Quaternion.identity);
+                    Transform radarPingTransform = Instantiate(radarPingPrefab, raycastHit2D.collider.transform.position, Quaternion.identity);
                     RadarPing radarPing = radarPingTransform.GetComponent<RadarPing>();
 
                     radarPing.SetDisappearTimer(waterObject.bomb);
@@ -133,9 +133,8 @@ public class BathyscapheRadar : MonoBehaviour
         {
             pulseColor.a = 0.3f;
         }
+
         pulseSpriteRenderer.color = pulseColor;
-
-
     }
 
 }

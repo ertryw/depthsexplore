@@ -13,7 +13,7 @@ public class Water : MonoBehaviour
     private Vector3 scale;
 
     [SerializeField]
-    private float neighborsDistance;
+    private Vector2 neighborsDistance;
 
     [Space(10)]
     [SerializeField]
@@ -22,9 +22,13 @@ public class Water : MonoBehaviour
     [SerializeField]
     private Color[] waterColors;
 
-    [Space(10)]
-    [SerializeField]
+    [Space(10)]    
+    [SerializeField] 
+    private float distanceToDestoryWater;
+
+    [SerializeField] 
     private float spawnRadius;
+
 
     [SerializeField]
     private int objectCount;
@@ -36,7 +40,7 @@ public class Water : MonoBehaviour
     private int bombsDepthIncreaseDelta;
 
     [SerializeField]
-    private WaterObject[] waterObjectsPrefabs;
+    private WaterObject[] scanableObjectsPrefabs;
 
     [SerializeField]
     private WaterObject[] bombsObjectsPrefabs;
@@ -72,11 +76,13 @@ public class Water : MonoBehaviour
     public void Setup()
     {
         DestoryWaterObjects();
-
         bathyscaphe = FindObjectOfType<Bathyscaphe>();
-        SpawnWaterObjects(objectCount, spawnRadius);
+
+        SpawnWaterObjects(objectCount, spawnRadius, scanableObjectsPrefabs);
+
         float depthAddBombs = bathyscaphe.data.depth < 0 ? (-bathyscaphe.data.depth / bombsDepthIncreaseDelta) : 0;
-        SpawnBombs(bombsCount + (int)depthAddBombs, spawnRadius);
+        SpawnWaterObjects(bombsCount + (int)depthAddBombs, spawnRadius, bombsObjectsPrefabs);
+
         bathyscapheIn = false;
     }
 
@@ -93,7 +99,9 @@ public class Water : MonoBehaviour
         if (distanceToBathyscaphe < 10 && bathyscapheIn == false)
         {
             bathyscapheIn = true;
-            SpawnNeighbors();
+            SpawnNeighbors(new Vector2Int(0, 1), neighborsDistance * Vector2.down);         // down
+            SpawnNeighbors(new Vector2Int(2, 1), neighborsDistance * new Vector2(-1, -1));  // left    
+            SpawnNeighbors(new Vector2Int(2, 1), neighborsDistance * new Vector2(1, -1));   // right                    
         }
     }
 
@@ -106,19 +114,11 @@ public class Water : MonoBehaviour
         }
     }
 
-    public void DestoryWater()
-    {
-        DestoryWaterObjects();
-
-        if (dontDestory == false)
-            Destroy(gameObject);
-    }
-
     private IEnumerator DestroyFar()
     {
         while (true)
         {
-            if (distanceToBathyscaphe > 80.0f)
+            if (distanceToBathyscaphe > distanceToDestoryWater)
                 DestoryWater();
 
             yield return new WaitForSecondsRealtime(0.2f);
@@ -138,53 +138,32 @@ public class Water : MonoBehaviour
         obj.transform.SetAsFirstSibling();
     }
 
-    private void SpawnNeighbors()
+    private void SpawnNeighbors(Vector2Int count, Vector2 distance)
     {
-        Vector3 newPositionDown = new Vector3(transform.position.x, transform.position.y - neighborsDistance, transform.position.z);
-        InstantiateWater(newPositionDown);
-
-        Vector3 newPositionLeftDown = new Vector3(transform.position.x - neighborsDistance, transform.position.y - neighborsDistance, transform.position.z);
-        InstantiateWater(newPositionLeftDown);
-
-        Vector3 newPositionLeftDown2 = new Vector3(transform.position.x - (neighborsDistance * 2), transform.position.y - neighborsDistance, transform.position.z);
-        InstantiateWater(newPositionLeftDown2);
-
-        Vector3 newPositionRigthDown = new Vector3(transform.position.x + neighborsDistance, transform.position.y - neighborsDistance, transform.position.z);
-        InstantiateWater(newPositionRigthDown);
-
-        Vector3 newPositionRigthDown2 = new Vector3(transform.position.x + (neighborsDistance * 2), transform.position.y - neighborsDistance, transform.position.z);
-        InstantiateWater(newPositionRigthDown2);
-    }
-
-    private void SpawnWaterObjects(int count, float radius)
-    {
-        int spawned = 0;
-
-        while (spawned != count)
+        for (int i = 1; i < count.y + 1; i++)
         {
+            if (count.x == 0)
+            {
+                Vector3 newPosition = new Vector3(transform.position.x, transform.position.y + (distance.y * i), transform.position.z);
+                InstantiateWater(newPosition);
+            }
 
-            WaterObject objectsToInstantiate = waterObjectsPrefabs[UnityEngine.Random.Range(0, waterObjectsPrefabs.Length)];
-
-            if (-bathyscaphe.data.depth < objectsToInstantiate.fromDepth)
-                continue;
-
-            Vector2 randomPosition = UnityEngine.Random.insideUnitCircle * radius;
-            Vector3 newPosition = transform.position + new Vector3(randomPosition.x, randomPosition.y, 0);
-
-            waterObjects.Add(Instantiate(objectsToInstantiate, newPosition, Quaternion.identity, this.transform.parent));
-            spawned++;
+            for (int j = 1; j < count.x + 1; j++)
+            {
+                Vector3 newPosition = new Vector3(transform.position.x + (distance.x * j), transform.position.y + (distance.y * i), transform.position.z);
+                InstantiateWater(newPosition);
+            }
         }
     }
 
-    private void SpawnBombs(int count, float radius)
+    private void SpawnWaterObjects(int count, float radius, WaterObject[] waterObjectsPrefabs)
     {
         int spawned = 0;
         int trySpawn = 0;
 
         while (spawned != count)
         {
-
-            WaterObject objectsToInstantiate = bombsObjectsPrefabs[UnityEngine.Random.Range(0, bombsObjectsPrefabs.Length)];
+            WaterObject objectsToInstantiate = waterObjectsPrefabs[UnityEngine.Random.Range(0, waterObjectsPrefabs.Length)];
             trySpawn++;
 
             if (trySpawn > count * 10)
@@ -196,9 +175,17 @@ public class Water : MonoBehaviour
             Vector2 randomPosition = UnityEngine.Random.insideUnitCircle * radius;
             Vector3 newPosition = transform.position + new Vector3(randomPosition.x, randomPosition.y, 0);
 
-            waterObjects.Add(Instantiate(objectsToInstantiate, newPosition, Quaternion.identity, this.transform.parent));
+            waterObjects.Add(Instantiate(objectsToInstantiate, newPosition, Quaternion.identity, transform.parent));
             spawned++;
         }
+    }
+
+    public void DestoryWater()
+    {
+        DestoryWaterObjects();
+
+        if (dontDestory == false)
+            Destroy(gameObject);
     }
 
 }

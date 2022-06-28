@@ -1539,6 +1539,14 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8539060667204629665, guid: 27c9eed1f9836744186a1655d7b332a7, type: 3}
+      propertyPath: neighborsDistance.x
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8539060667204629665, guid: 27c9eed1f9836744186a1655d7b332a7, type: 3}
+      propertyPath: neighborsDistance.y
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8539060667204629665, guid: 27c9eed1f9836744186a1655d7b332a7, type: 3}
       propertyPath: bombsDepthIncreaseDelta
       value: 200
       objectReference: {fileID: 0}
@@ -4936,6 +4944,14 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8539060667204629665, guid: 27c9eed1f9836744186a1655d7b332a7, type: 3}
+      propertyPath: neighborsDistance.x
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8539060667204629665, guid: 27c9eed1f9836744186a1655d7b332a7, type: 3}
+      propertyPath: neighborsDistance.y
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8539060667204629665, guid: 27c9eed1f9836744186a1655d7b332a7, type: 3}
       propertyPath: bombsDepthIncreaseDelta
       value: 200
       objectReference: {fileID: 0}
@@ -5787,6 +5803,14 @@ PrefabInstance:
       propertyPath: dontDestory
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8539060667204629665, guid: 27c9eed1f9836744186a1655d7b332a7, type: 3}
+      propertyPath: neighborsDistance.x
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8539060667204629665, guid: 27c9eed1f9836744186a1655d7b332a7, type: 3}
+      propertyPath: neighborsDistance.y
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 8539060667204629670, guid: 27c9eed1f9836744186a1655d7b332a7, type: 3}
       propertyPath: m_Name
       value: Water (2)
@@ -6472,7 +6496,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72c9a89e37cc76d44b92abd4dde780cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pfRadarPing: {fileID: 6720710041684458615, guid: ddc037da9dbb26840853badebd2d5eff, type: 3}
+  radarPingPrefab: {fileID: 0}
   radarLayerMask:
     serializedVersion: 2
     m_Bits: 2147483647
@@ -7897,6 +7921,14 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8539060667204629665, guid: 27c9eed1f9836744186a1655d7b332a7, type: 3}
+      propertyPath: neighborsDistance.x
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8539060667204629665, guid: 27c9eed1f9836744186a1655d7b332a7, type: 3}
+      propertyPath: neighborsDistance.y
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8539060667204629665, guid: 27c9eed1f9836744186a1655d7b332a7, type: 3}
       propertyPath: bombsDepthIncreaseDelta
       value: 200
       objectReference: {fileID: 0}
@@ -8041,6 +8073,14 @@ PrefabInstance:
     - target: {fileID: 8539060667204629665, guid: 27c9eed1f9836744186a1655d7b332a7, type: 3}
       propertyPath: dontDestory
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8539060667204629665, guid: 27c9eed1f9836744186a1655d7b332a7, type: 3}
+      propertyPath: neighborsDistance.x
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8539060667204629665, guid: 27c9eed1f9836744186a1655d7b332a7, type: 3}
+      propertyPath: neighborsDistance.y
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 8539060667204629670, guid: 27c9eed1f9836744186a1655d7b332a7, type: 3}
       propertyPath: m_Name

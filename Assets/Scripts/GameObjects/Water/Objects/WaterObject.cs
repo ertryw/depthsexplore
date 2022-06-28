@@ -139,7 +139,9 @@ public abstract class WaterObject : MonoBehaviour
 
     public void DestroyDestoryObject(float speed, bool playSound)
     {
-        transform.DOScale(0, speed).SetEase(Ease.InBack).OnComplete(() => StartCoroutine(PrepareToDestory(playSound)));
+        transform.DOScale(0, speed)
+            .SetEase(Ease.InBack)
+            .OnComplete(() => StartCoroutine(PrepareToDestory(playSound)));
     }
 
     private IEnumerator PrepareToDestory(bool playSound)

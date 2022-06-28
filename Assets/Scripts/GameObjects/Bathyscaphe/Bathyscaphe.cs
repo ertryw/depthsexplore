@@ -235,8 +235,9 @@ public class Bathyscaphe : MonoBehaviour
         // Stering(steeringSlider.value);
     }
 
+ #if UNITY_ANDROID
     // Steering for Mobile
-    
+
     // public void Steer(float directionMagnitude)
     // {
     //     rb.AddForce(Vector2.right * directionMagnitude);
@@ -253,6 +254,7 @@ public class Bathyscaphe : MonoBehaviour
 
     //     Steer(steeringValue);
     // }
+#endif
 
     public void SteringReset()
     {

@@ -4,11 +4,10 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
         {
             "name": "Unity Editor",
             "type": "unity",
-            "path": "/C:/UnityProjects/Projects/TestProject/Library/EditorInstance.json",
+            "path": "/C:/Users/ramze/OneDrive/Documents/Github/depthsexplore/Library/EditorInstance.json",
             "request": "launch"
         },
         {

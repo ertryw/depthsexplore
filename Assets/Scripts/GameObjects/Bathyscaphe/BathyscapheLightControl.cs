@@ -106,7 +106,6 @@ public class BathyscapheLightControl : MonoBehaviour
         if (obj.IsOverGui)
             return;
 
-        //RotateToTween(obj.GetWorldPosition(1.0f), bathyscaphe.data.rotationDuration, () => fingerDown = true);
         RotateTo(obj.GetWorldPosition(1.0f));
         fingerDown = true;
     }

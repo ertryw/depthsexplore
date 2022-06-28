@@ -1,13 +1,10 @@
 using UnityEngine;
 using DG.Tweening;
-using System;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 
 public class SpriteRendererDoColor : MonoBehaviour
 {
-    public event Action Start;
-    public event Action Complete;
     private float duration;
     private Ease ease;
     private SpriteRenderer spriteRenderer;
@@ -18,7 +15,7 @@ public class SpriteRendererDoColor : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
-    
+
     public SpriteRendererDoColor DoColor()
     {
         tween = spriteRenderer.DOColor(color, duration).SetEase(ease);

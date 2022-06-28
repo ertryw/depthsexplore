@@ -9,7 +9,7 @@ public class Bomb : WaterObject
 
     private void Start()
     {
-        SetCommonSprite();
+        base.SetCommonSprite();
     }
 
     private void OnTriggerEnter2D(Collider2D col)

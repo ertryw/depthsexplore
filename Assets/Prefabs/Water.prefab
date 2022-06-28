@@ -101,7 +101,7 @@ MonoBehaviour:
   dontDestory: 0
   waterPrefab: {fileID: 8539060667204629670}
   scale: {x: 5, y: 5, z: 1}
-  neighborsDistance: 20
+  neighborsDistance: {x: 20, y: 20}
   waterImage: {fileID: 8539060667204629664}
   waterColors:
   - {r: 0.3764706, g: 0.37453592, b: 0.49056602, a: 1}
@@ -110,17 +110,18 @@ MonoBehaviour:
   - {r: 0.28221786, g: 0.35298175, b: 0.3962264, a: 1}
   - {r: 0.2759434, g: 0.36529544, b: 0.5, a: 1}
   - {r: 0.28564438, g: 0.40745115, b: 0.46226418, a: 1}
+  distanceToDestoryWater: 80
   spawnRadius: 9
   objectCount: 8
   bombsCount: 8
   bombsDepthIncreaseDelta: 200
-  waterObjectsPrefabs:
-  - {fileID: 4518382270783364737, guid: f3b7f40ed5af61c4fb529e339f7fe095, type: 3}
-  - {fileID: 4518382270783364737, guid: 1959a76c718985d48a2f38943b8b0545, type: 3}
-  - {fileID: 4518382270783364737, guid: 5c9a70807e027f349b8c7dfbec533109, type: 3}
-  - {fileID: 4518382270783364737, guid: 3e48e2fdb5bff574eaede4083881f0fd, type: 3}
-  - {fileID: 4518382270783364737, guid: fe7ac78ee2a283e45b995af65b641baa, type: 3}
+  scanableObjectsPrefabs:
   - {fileID: 4518382270783364737, guid: 84ef2c0ab626313468e86289ac8b6b7a, type: 3}
+  - {fileID: 4518382270783364737, guid: 1959a76c718985d48a2f38943b8b0545, type: 3}
+  - {fileID: 4518382270783364737, guid: f3b7f40ed5af61c4fb529e339f7fe095, type: 3}
+  - {fileID: 4518382270783364737, guid: 3e48e2fdb5bff574eaede4083881f0fd, type: 3}
+  - {fileID: 4518382270783364737, guid: 5c9a70807e027f349b8c7dfbec533109, type: 3}
+  - {fileID: 4518382270783364737, guid: fe7ac78ee2a283e45b995af65b641baa, type: 3}
   bombsObjectsPrefabs:
   - {fileID: -838354208746681819, guid: 65dc8f24f9665f54ab51220181d00a1c, type: 3}
   - {fileID: -838354208746681819, guid: d0fa58c7c8a00e54b83768bf97fdcce6, type: 3}
