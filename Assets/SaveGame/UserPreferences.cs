@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using UnityEngine;
-using System.Runtime.InteropServices;
+using System;
+using System.Reflection;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -22,30 +23,24 @@ public class UserPreferencesEditor : Editor
         {
             (target as UserPreferences).ResetSave();
         }
-
+        
     }
 }
 #endif
 
 public class UserPreferences : MonoBehaviour
 {
-    public delegate void FirstPlayDelegate();
-    public static event FirstPlayDelegate onFirstPlay;
-    public delegate void OnNextPlay();
-    public static event OnNextPlay onNextPlay;
+    public static event Action FirstPlay;
+    public static event Action NextPlay;
 
     private string userPreferencesFile = @"/userPreferences.dat";
     private static UserPreferences _instance;
+
     [Space(10)]
     public PlayerData playerData;
-    System.DateTime lastRemoteSaveDate = new System.DateTime(1900, 1, 1);
-    public float remoteSaveInterval = 60;
-    public bool init;
+    private System.DateTime lastRemoteSaveDate = new System.DateTime(1900, 1, 1);
 
-    [DllImport("__Internal")]
-    private static extern void JS_FileSystem_Sync();
-
-    public static UserPreferences instance
+    public static UserPreferences Instance
     {
         get
         {
@@ -113,7 +108,7 @@ public class UserPreferences : MonoBehaviour
         {
             PlayerData data = CryptedFileSaver.LoadFileWithBinaryFormater<PlayerData>(filePath);
             playerData = data;
-            onNextPlay?.Invoke();
+            NextPlay?.Invoke();
         }
         else
         {
@@ -121,11 +116,9 @@ public class UserPreferences : MonoBehaviour
             {
                 playerData = new PlayerData();
             }
-            
-            onFirstPlay?.Invoke();
+
+            FirstPlay?.Invoke();
         }
-
-
     }
 
     private void InitializePlayerData()
@@ -140,7 +133,7 @@ public class UserPreferences : MonoBehaviour
         SaveLocal();
     }
 
-    public void ResetSave() 
+    public void ResetSave()
     {
         playerData = new PlayerData();
         Save();
@@ -168,6 +161,9 @@ public class UserPreferences : MonoBehaviour
     {
         playerData.saveDate = System.DateTime.Now.ToString();
     }
+
+
+    
 }
 
 

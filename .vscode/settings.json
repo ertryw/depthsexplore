@@ -71,6 +71,7 @@
         "Consumpton",
         "Courtine",
         "Crypted",
+        "deactive",
         "Delegat",
         "Destory",
         "Dont",
@@ -94,6 +95,13 @@
         "visualscripting",
         "Yoyo"
     ],
+    "csharp.semanticHighlighting.enabled": false,
+    "csharp.suppressHiddenDiagnostics": false,
+    "omnisharp.enableAsyncCompletion": true,
+    "omnisharp.enableRoslynAnalyzers": true,
+    "omnisharp.useModernNet": false,
+    "razor.format.enable": false,
+    "cSpell.enabled": true,
 
 
 }

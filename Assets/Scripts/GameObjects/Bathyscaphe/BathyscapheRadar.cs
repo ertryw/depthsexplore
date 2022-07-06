@@ -1,11 +1,8 @@
-using System;
 using System.Collections.Generic;
-using Hellmade.Sound;
 using UnityEngine;
 
 public class BathyscapheRadar : MonoBehaviour
 {
-
     [SerializeField]
     private Transform radarPingPrefab;
 
@@ -16,27 +13,40 @@ public class BathyscapheRadar : MonoBehaviour
     private SpriteRenderer pulseSpriteRenderer;
 
     [SerializeField]
+    private float rangeMax = 18;
+
+    [SerializeField]
+    private float fadeRange = 5f;
+
+    [SerializeField]
     private float rangeSpeedInit;
 
-    public AudioClip clickAudio;
-    public AudioClip sonarAudio;
+    [SerializeField]
+    private AudioSource audioSource;
+
+    [SerializeField]
+    private AudioClip sonarAudio;
+
 
     private float range;
-    private float rangeMax;
-    private float fadeRange;
     private Color pulseColor;
     private List<Collider2D> alreadyPingedColliderList;
-
-    [HideInInspector]
-    public Bathyscaphe bathyscaphe;
+    private Device radar;
 
     private void Start()
     {
+        radar = Device.Init(pulseSpriteRenderer.transform);
+        radar.Setup(() => UserPreferences.Instance.playerData.statRadar.value, CanActive, null);
+
         pulseColor = pulseSpriteRenderer.color;
-        rangeMax = 18f;
-        fadeRange = 5f;
         alreadyPingedColliderList = new List<Collider2D>();
-        pulseSpriteRenderer.gameObject.SetActive(bathyscaphe.data.statRadar.active);
+
+        audioSource.clip = sonarAudio;
+    }
+
+    private bool CanActive()
+    {
+        return LevelManager.Instance.IsEnded() == false;
     }
 
     private void OnEnable()
@@ -53,7 +63,7 @@ public class BathyscapheRadar : MonoBehaviour
 
     private void OnPlayEnd()
     {
-        pulseSpriteRenderer.gameObject.SetActive(false);
+        radar.Active = false;
     }
 
     private void OnControlChange(string statName, bool value)
@@ -61,43 +71,35 @@ public class BathyscapheRadar : MonoBehaviour
         if (statName != "statRadar")
             return;
 
-        int soundID = EazySoundManager.PrepareSound(clickAudio);
-        Audio clickMusicAudio = EazySoundManager.GetAudio(soundID);
-        clickMusicAudio.Pitch = 0.5f;
-        clickMusicAudio.Play(0.4f);
-
         if (value == true)
         {
+            range = 0.0f;
             PlaySonarSound();
         }
 
-        pulseSpriteRenderer.gameObject.SetActive(value);
+        radar.Active = value;
     }
 
     private void PlaySonarSound()
     {
-        int soundId = EazySoundManager.PrepareSound(sonarAudio);
-        Audio clickMusicAudio = EazySoundManager.GetAudio(soundId);
-        clickMusicAudio.Pitch = 1f;
-        clickMusicAudio.Play(1f);
+        audioSource.Play();
     }
 
     private void Update()
     {
-        if (bathyscaphe.data.statRadar.active == false || LevelManager.Instance.playEnds)
-        {
-            range = 0.0f;
+        if (radar.Active == false)
             return;
-        }
 
-        range += (rangeSpeedInit + rangeSpeedInit * UserPreferences.instance.playerData.statRadar) * Time.deltaTime;
+        range += (rangeSpeedInit + rangeSpeedInit * radar.Level) * Time.deltaTime;
 
         if (range > rangeMax)
         {
-            PlaySonarSound();
             range = 0f;
             alreadyPingedColliderList.Clear();
         }
+
+        if (range == 0.0f)
+            PlaySonarSound();
 
         pulseSpriteRenderer.transform.localScale = new Vector3(range, range);
         RaycastHit2D[] raycastHit2DArray = Physics2D.CircleCastAll(transform.position, range / 1.2f, Vector2.zero, 0f, radarLayerMask);
@@ -126,13 +128,9 @@ public class BathyscapheRadar : MonoBehaviour
 
         // Fade Pulse
         if (range > rangeMax - fadeRange)
-        {
             pulseColor.a = Mathf.Lerp(0f, 0.3f, (rangeMax - range) / fadeRange);
-        }
         else
-        {
             pulseColor.a = 0.3f;
-        }
 
         pulseSpriteRenderer.color = pulseColor;
     }

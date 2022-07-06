@@ -22,13 +22,12 @@ public class Water : MonoBehaviour
     [SerializeField]
     private Color[] waterColors;
 
-    [Space(10)]    
-    [SerializeField] 
+    [Space(10)]
+    [SerializeField]
     private float distanceToDestoryWater;
 
-    [SerializeField] 
+    [SerializeField]
     private float spawnRadius;
-
 
     [SerializeField]
     private int objectCount;
@@ -71,19 +70,6 @@ public class Water : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
         Setup();
-    }
-
-    public void Setup()
-    {
-        DestoryWaterObjects();
-        bathyscaphe = FindObjectOfType<Bathyscaphe>();
-
-        SpawnWaterObjects(objectCount, spawnRadius, scanableObjectsPrefabs);
-
-        float depthAddBombs = bathyscaphe.data.depth < 0 ? (-bathyscaphe.data.depth / bombsDepthIncreaseDelta) : 0;
-        SpawnWaterObjects(bombsCount + (int)depthAddBombs, spawnRadius, bombsObjectsPrefabs);
-
-        bathyscapheIn = false;
     }
 
     private void Update()
@@ -178,6 +164,19 @@ public class Water : MonoBehaviour
             waterObjects.Add(Instantiate(objectsToInstantiate, newPosition, Quaternion.identity, transform.parent));
             spawned++;
         }
+    }
+    
+    public void Setup()
+    {
+        DestoryWaterObjects();
+        bathyscaphe = FindObjectOfType<Bathyscaphe>();
+
+        SpawnWaterObjects(objectCount, spawnRadius, scanableObjectsPrefabs);
+
+        float depthAddBombs = bathyscaphe.data.depth < 0 ? (-bathyscaphe.data.depth / bombsDepthIncreaseDelta) : 0;
+        SpawnWaterObjects(bombsCount + (int)depthAddBombs, spawnRadius, bombsObjectsPrefabs);
+
+        bathyscapheIn = false;
     }
 
     public void DestoryWater()

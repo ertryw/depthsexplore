@@ -50,11 +50,8 @@ public class ButtonControl : MonoBehaviour
 
         SetActive(stat.active);
         controlData.SetField(statName, stat);
-
-        controlData.OnSetFloatStat?.Invoke(statName, stat.value);
         OnChange?.Invoke(statName, stat.active);
     }
-
 
     private void Awake()
     {

@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using Hellmade.Sound;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -9,6 +7,11 @@ public class Bathyscaphe : MonoBehaviour
 {
     public static event Action Finished;
     public static event Action SurfaceEntry;
+    public static event Action DepthWaterEntry;
+    public static event Action WaterEntry;
+
+    private static Bathyscaphe _instance;
+    public static Bathyscaphe Instance => _instance;
 
     [SerializeField]
     private Button upgradeButton;
@@ -33,9 +36,6 @@ public class Bathyscaphe : MonoBehaviour
     [SerializeField]
     private GainedPointsUI gainedPointsUIPrefab;
 
-    [SerializeField]
-    private MyControl movement;
-
     private Vector3 initPosition;
     private Transform initParent;
 
@@ -53,7 +53,6 @@ public class Bathyscaphe : MonoBehaviour
     public UnityEvent onSurface;
     public UnityEvent onWater;
     public UnityEvent onDepthWaterEvent;
-    public Action onDepthWater;
 
     [SerializeField]
     private UnityEvent OnStartSwim;
@@ -62,17 +61,16 @@ public class Bathyscaphe : MonoBehaviour
 
     private void Awake()
     {
+        if (_instance != null && _instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            _instance = this;
+        }
+
         SetOnSurface();
-        lightControl = GetComponent<BathyscapheLightControl>();
-        lightControl.bathyscaphe = this;
-
-        energyControl = GetComponent<BathyscapheEnergyControl>();
-        energyControl.bathyscaphe = this;
-        radarControl = GetComponent<BathyscapheRadar>();
-        radarControl.bathyscaphe = this;
-
-        movement = new MyControl();
-        movement.Enable();
 
         data.statLight.active = false;
         data.statRadar.active = false;
@@ -101,141 +99,53 @@ public class Bathyscaphe : MonoBehaviour
     private void OnEnable()
     {
         WaterObject.scannedEnd += ScannedEnd;
-        UserPreferences.onFirstPlay += FirstPlay;
-        UserPreferences.onNextPlay += NextPlay;
         WinPanelUI.onWinPanel += ResetBathyscaphe;
+
+        UserPreferences.FirstPlay += FirstPlay;
+        UserPreferences.NextPlay += NextPlay;
     }
 
     private void OnDisable()
     {
         WaterObject.scannedEnd -= ScannedEnd;
-        UserPreferences.onFirstPlay -= FirstPlay;
-        UserPreferences.onNextPlay -= NextPlay;
         WinPanelUI.onWinPanel -= ResetBathyscaphe;
+
+        UserPreferences.FirstPlay -= FirstPlay;
+        UserPreferences.NextPlay -= NextPlay;
     }
 
     private void FirstPlay()
     {
         Debug.Log("firstPlay");
-        UserPreferences.instance.playerData.points = data.startPoints;
-        UserPreferences.instance.playerData.statEnergy = data.statEnergy.InitValue();
-        UserPreferences.instance.playerData.statLight = data.statLight.InitValue();
-        UserPreferences.instance.playerData.statRadar = data.statRadar.InitValue();
-        UserPreferences.instance.playerData.statScanner = data.statScanner.InitValue();
-        UserPreferences.instance.playerData.statSteering = data.statSteering.InitValue();
+        UserPreferences.Instance.playerData.points = data.startPoints;
+        UserPreferences.Instance.playerData.statEnergy = data.statEnergy.Init();
+        UserPreferences.Instance.playerData.statLight = data.statLight.Init();
+        UserPreferences.Instance.playerData.statRadar = data.statRadar.Init();
+        UserPreferences.Instance.playerData.statScanner = data.statScanner.Init();
+        UserPreferences.Instance.playerData.statSteering = data.statSteering.Init();
 
-        UserPreferences.instance.Save();
+
+        UserPreferences.Instance.Save();
     }
 
     private void NextPlay()
     {
         Debug.Log("nextPlay");
-        data.statEnergy.value = UserPreferences.instance.playerData.statEnergy;
-        data.statLight.value = UserPreferences.instance.playerData.statLight;
-        data.statRadar.value = UserPreferences.instance.playerData.statRadar;
-        data.statScanner.value = UserPreferences.instance.playerData.statScanner;
-        data.statSteering.value = UserPreferences.instance.playerData.statSteering;
     }
 
     private void ScannedEnd(WaterObject obj)
     {
-        GainedPointsUI gainedPoints = Instantiate(
-            gainedPointsUIPrefab,
-            obj.transform.position,
-            Quaternion.identity
-        );
+        GainedPointsUI gainedPoints = Instantiate(gainedPointsUIPrefab, obj.transform.position, Quaternion.identity);
 
         int points = (int)(obj.pointsGainK * -data.depth * obj.rarityData.multiply[(int)obj.rarityType]);
         gainedPoints.Setup(points);
 
-        UserPreferences.instance.playerData.points += points;
-        UserPreferences.instance.Save();
+        UserPreferences.Instance.playerData.points += points;
+        UserPreferences.Instance.Save();
     }
 
-    Audio motorAudioEazy;
+#if UNITY_ANDROID
 
-    private void PlayMotorSound()
-    {
-        float motorVolume = 0.4f;
-
-        if (motorAudioEazy == null)
-        {
-            int soundId = EazySoundManager.PrepareSound(motorAudio);
-            motorAudioEazy = EazySoundManager.GetAudio(soundId);
-            motorAudioEazy.Pitch = 1.3f;
-            motorAudioEazy.Play(motorVolume);
-        }
-        else
-        {
-            if (motorAudioEazy.Volume == 0.0f)
-            {
-                motorAudioEazy.SetVolume(motorVolume);
-            }
-
-            if (motorAudioEazy.IsPlaying == false)
-            {
-                motorAudioEazy.Play(motorVolume);
-            }
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        if (data.energyValue <= 0)
-        {
-            if (LevelManager.Instance.playEnds == false)
-            {
-                LevelManager.Instance.playEnds = true;
-                Finished?.Invoke();
-            }
-
-            rb.velocity = Vector2.zero;
-            return;
-        }
-
-        Vector2 move = Vector2.zero;
-
-        if (State is BathyscapheInWater || State is BathyscapeInDepthWater)
-        {
-            move = movement.Bathyscaphe.Move.ReadValue<Vector2>();
-            rb.AddForce(data.steeringSpeedMultiply * data.statSteering.value * move);
-        }
-
-        if (move.x != 0)
-            data.statSteering.active = true;
-        else
-            data.statSteering.active = false;
-
-        if (move.y != 0)
-        {
-            rb.velocity = Vector2.ClampMagnitude(
-                rb.velocity,
-                State.MaxVelocity + (data.statSteering.value * 2)
-            );
-            data.statSteeringDown.active = true;
-        }
-        else
-        {
-            rb.velocity = Vector2.ClampMagnitude(rb.velocity, State.MaxVelocity);
-            data.statSteeringDown.active = false;
-        }
-
-        if (move.magnitude > 0)
-        {
-            PlayMotorSound();
-        }
-        else
-        {
-            if (motorAudioEazy != null)
-            {
-                motorAudioEazy.SetVolume(0.0f);
-            }
-        }
-
-        // Stering(steeringSlider.value);
-    }
-
- #if UNITY_ANDROID
     // Steering for Mobile
 
     // public void Steer(float directionMagnitude)
@@ -254,7 +164,7 @@ public class Bathyscaphe : MonoBehaviour
 
     //     Steer(steeringValue);
     // }
-#endif
+
 
     public void SteringReset()
     {
@@ -265,20 +175,16 @@ public class Bathyscaphe : MonoBehaviour
     {
         steeringSlider.interactable = false;
 
-        while ( Mathf.Ceil(steeringSlider.value) > Mathf.Ceil(steeringMiddle) + 1
-            || Mathf.Ceil(steeringSlider.value) < Mathf.Ceil(steeringMiddle) - 1
-        )
+        while (Mathf.Ceil(steeringSlider.value) > Mathf.Ceil(steeringMiddle) + 1
+            || Mathf.Ceil(steeringSlider.value) < Mathf.Ceil(steeringMiddle) - 1)
         {
-            steeringSlider.value = Mathf.Lerp(
-                steeringSlider.value,
-                steeringMiddle,
-                Time.deltaTime * steeringMiddleSpeed
-            );
+            steeringSlider.value = Mathf.Lerp(steeringSlider.value, steeringMiddle, Time.deltaTime * steeringMiddleSpeed );
             yield return new WaitForEndOfFrame();
         }
 
         steeringSlider.interactable = true;
     }
+#endif
 
     public void SetOnSurface()
     {
@@ -302,6 +208,7 @@ public class Bathyscaphe : MonoBehaviour
 
         State = new BathyscapheInWater(data.waterMaxVelocity);
         onWater?.Invoke();
+        WaterEntry?.Invoke();
 
         upgradeButton.interactable = false;
         upgradePanel.HidePanel();
@@ -314,6 +221,6 @@ public class Bathyscaphe : MonoBehaviour
 
         State = new BathyscapeInDepthWater(data.depthWaterMaxVelocity);
         onDepthWaterEvent.Invoke();
-        onDepthWater?.Invoke();
+        DepthWaterEntry?.Invoke();
     }
 }

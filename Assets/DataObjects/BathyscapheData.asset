@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc5c00b6c8ca35448a887b612bec46d2, type: 3}
   m_Name: BathyscapheData
   m_EditorClassIdentifier: 
-  startPoints: 50
+  startPoints: 5000
   upgradeCostMultiply: 500
   energyStartMultiply: 1200
   energyValue: 120
-  depth: 83.7047
+  depth: 83.700676
   rotationSpeed: 2
   rotationDuration: 0.5
   steeringSpeedMultiply: 30

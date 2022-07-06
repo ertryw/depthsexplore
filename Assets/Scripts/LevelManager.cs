@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using Hellmade.Sound;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -19,20 +18,17 @@ public class LevelManager : MonoBehaviour
 
     [SerializeField]
     private TextMeshProUGUI psiValueText;
-    
-    [SerializeField]
-    private Bathyscaphe bathyscaphe;
 
     [SerializeField]
     public EarthData earthData;
-
-    [SerializeField]
-    private AudioClip scanningSound;
 
     public static LevelManager Instance { get; private set; }
 
     [HideInInspector]
     public bool playEnds = false;
+
+    [SerializeField]
+    private AudioClip scanningAudio;
 
     private void Awake()
     {
@@ -52,35 +48,28 @@ public class LevelManager : MonoBehaviour
         StartCoroutine(DecreaseLightCoroutine());
     }
 
-    private void ActiveFlashLights()
-    {
-        bathyscaphe.lightControl.SetActiveFlashLights(true);
-    }
-    
-
     private IEnumerator DecreaseLightCoroutine()
     {
         float initIntensity = globalLigth.intensity;
 
         while (globalLigth.intensity >= globalLightDarkIntense)
         {
-            float level = (-bathyscaphe.data.depth + earthData.depthWaterLevel) / 100;
+            float level = (Bathyscaphe.Instance.data.depth + earthData.depthWaterLevel) / 100;
             globalLigth.intensity = Mathf.Lerp(initIntensity, 0, darkeningSpeed * level);
             yield return new WaitForEndOfFrame();
         }
     }
-    
+
     private void OnEnable()
     {
-        bathyscaphe.onDepthWater += DecreaseLight;
+        Bathyscaphe.DepthWaterEntry += DecreaseLight;
         WinPanelUI.onWinPanelComplete += OnWinComplete;
         WinPanelUI.onWinPanel += OnWin;
-
     }
 
     private void OnDisable()
     {
-        bathyscaphe.onDepthWater -= DecreaseLight;
+        Bathyscaphe.DepthWaterEntry -= DecreaseLight;
         WinPanelUI.onWinPanelComplete -= OnWinComplete;
         WinPanelUI.onWinPanel -= OnWin;
     }
@@ -92,7 +81,7 @@ public class LevelManager : MonoBehaviour
         foreach (Water item in waters)
         {
             item.DestoryWater();
-        } 
+        }
     }
 
     private void OnWinComplete()
@@ -102,29 +91,29 @@ public class LevelManager : MonoBehaviour
         foreach (Water item in waters)
         {
             item.Setup();
-        }  
+        }
     }
 
     private void Update()
     {
-        if (bathyscaphe != null)
+        if (Bathyscaphe.Instance != null)
         {
-            bathyscaphe.data.depth = bathyscaphe.transform.position.y * earthData.psiMultiply;
+            Bathyscaphe.Instance.data.depth = Bathyscaphe.Instance.transform.position.y * earthData.psiMultiply;
 
-            if (bathyscaphe.data.depth < 0 && (bathyscaphe.State is BathyscapeOnSurface))
+            if (Bathyscaphe.Instance.data.depth < 0 && (Bathyscaphe.Instance.State is BathyscapeOnSurface))
             {
-                bathyscaphe.SetInWater();
+                Bathyscaphe.Instance.SetInWater();
             }
 
-            if (bathyscaphe.data.depth < 0)
+            if (Bathyscaphe.Instance.data.depth < 0)
             {
 
-                if (bathyscaphe.data.depth  < earthData.depthWaterLevel * (-1) && bathyscaphe.State is BathyscapheInWater)
+                if (Bathyscaphe.Instance.data.depth < earthData.depthWaterLevel * (-1) && Bathyscaphe.Instance.State is BathyscapheInWater)
                 {
-                    bathyscaphe.SetInDepthWater();
+                    Bathyscaphe.Instance.SetInDepthWater();
                 }
 
-                psiValueText.text = (-(int)bathyscaphe.data.depth).ToString(); // In water
+                psiValueText.text = (-(int)Bathyscaphe.Instance.data.depth).ToString(); // In water
             }
             else
             {
@@ -132,39 +121,7 @@ public class LevelManager : MonoBehaviour
             }
         }
     }
+    
+    public bool IsEnded() => playEnds;
 
-    Audio scanningAudio;
-    public void PlayScanningSound()
-    {
-        float motorVolume = 0.6f;
-
-        if (scanningAudio == null)
-        {
-            int soundId = EazySoundManager.PrepareSound(scanningSound);
-            scanningAudio = EazySoundManager.GetAudio(soundId);
-            scanningAudio.Pitch = 1f;
-            scanningAudio.Play(motorVolume);
-            scanningAudio.Loop = true;
-        }
-        else
-        {
-            if (scanningAudio.Volume == 0.0f)
-            {
-                scanningAudio.SetVolume(motorVolume);
-            }
-
-            if (scanningAudio.IsPlaying == false)
-            {
-                scanningAudio.Play(motorVolume);
-            }
-        }
-    }
-
-    public void StopScanningSound()
-    {
-        if (scanningAudio != null)
-        {
-            scanningAudio.SetVolume(0.0f);
-        }
-    }
 }

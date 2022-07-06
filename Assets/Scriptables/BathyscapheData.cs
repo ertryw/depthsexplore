@@ -20,7 +20,7 @@ public class BathyscapheData : ScriptableObject
     [Space(10)]
     public float rotationSpeed;
     public float rotationDuration;
-    public float steeringSpeedMultiply; 
+    public float steeringSpeedMultiply;
     [Space(10)]
     public float surfaceMaxVelocity;
     public float waterMaxVelocity;
@@ -33,8 +33,6 @@ public class BathyscapheData : ScriptableObject
     public StatData statScanner;
     public StatData statSteering;
     public StatData statSteeringDown;
-    
-    public Action<string, float> OnSetFloatStat;
 
     public T GetField<T>(string fieldName)
     {

@@ -1,5 +1,4 @@
 using System;
-using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 using Lean.Touch;
@@ -15,8 +14,6 @@ public class StatIncrease
 
 public class BathyscapheLightControl : MonoBehaviour
 {
-    [SerializeField]
-    private Transform targetRotation;
 
     [SerializeField]
     private Light2D flashLight;
@@ -41,21 +38,18 @@ public class BathyscapheLightControl : MonoBehaviour
 
     private bool fingerDown;
     private TweenerCore<Quaternion, Quaternion, NoOptions> rotateTween;
-
-    [HideInInspector]
-    public Bathyscaphe bathyscaphe;
+    private Device lightDevice;
 
     private void Start()
     {
-        SetActiveFlashLights(bathyscaphe.data.statLight.active);
-        SetupFlashLight();
+        lightDevice = Device.Init(flashLight.transform);
+        lightDevice.Setup(() => UserPreferences.Instance.playerData.statLight.value, () => !LevelManager.Instance.IsEnded(), UpgradeFlashLight); 
+        lightDevice.Active = Bathyscaphe.Instance.data.statLight.active;
     }
 
     private void OnEnable()
     {
         LeanTouch.OnFingerUpdate += OnFingerMove;
-        LeanTouch.OnFingerDown += OnFingerDown;
-        LeanTouch.OnFingerUp += OnFingerUp;
         ButtonControl.OnChange += OnControlChange;
         StatisticUI.OnChange += OnStatChange;
         Bathyscaphe.Finished += OnPlayEnd;
@@ -64,8 +58,6 @@ public class BathyscapheLightControl : MonoBehaviour
     private void OnDisable()
     {
         LeanTouch.OnFingerUpdate -= OnFingerMove;
-        LeanTouch.OnFingerDown -= OnFingerDown;
-        LeanTouch.OnFingerUp -= OnFingerUp;
         ButtonControl.OnChange -= OnControlChange;
         StatisticUI.OnChange -= OnStatChange;
         Bathyscaphe.Finished -= OnPlayEnd;
@@ -73,15 +65,7 @@ public class BathyscapheLightControl : MonoBehaviour
 
     private void OnPlayEnd()
     {
-        SetActiveFlashLights(false);
-    }
-
-    private void OnFingerUp(LeanFinger obj)
-    {
-        if (rotateTween != null)
-            rotateTween.Kill();
-
-        fingerDown = false;
+        lightDevice.Active = false;
     }
 
     private void OnStatChange(string statName, float arg2)
@@ -89,7 +73,7 @@ public class BathyscapheLightControl : MonoBehaviour
         if (statName != "statLight")
             return;
 
-        SetupFlashLight();
+        UpgradeFlashLight();
     }
 
     private void OnControlChange(string statName, bool value)
@@ -97,64 +81,23 @@ public class BathyscapheLightControl : MonoBehaviour
         if (statName != "statLight")
             return;
 
-        Debug.Log(statName);
-        SetActiveFlashLights(value);
-    }
-
-    private void OnFingerDown(LeanFinger obj)
-    {
-        if (obj.IsOverGui)
-            return;
-
-        RotateTo(obj.GetWorldPosition(1.0f));
-        fingerDown = true;
+        lightDevice.Active = value;
     }
 
     private void OnFingerMove(LeanFinger obj)
     {
-        if (obj.IsOverGui || fingerDown == false)
-            return;
-
-        RotateTo(obj.GetWorldPosition(1.0f));
+        flashLight.transform.parent.RotateTo2D(obj.GetWorldPosition(1.0f), Bathyscaphe.Instance.data.rotationSpeed);
     }
 
-    public void RotateToTween(Vector3 target, float duration, TweenCallback onComplete)
+    public void UpgradeFlashLight()
     {
-        Vector3 dir = target - transform.position;
-        float angle = (Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg) + 90.0f;
+        flashLight.intensity = intensity.initValue + (intensity.multiplyValue * lightDevice.Level);
+        flashLight.pointLightOuterRadius = radiusOuter.initValue + (radiusOuter.multiplyValue * lightDevice.Level);
+        flashLight.pointLightOuterAngle = spotOuterAngle.initValue + (spotOuterAngle.multiplyValue * lightDevice.Level);
 
-        rotateTween = transform.DORotateQuaternion(Quaternion.AngleAxis(angle, Vector3.forward), duration)
-            .SetEase(Ease.InOutCubic)
-            .OnComplete(onComplete);
-    }
-
-    public void SetupFlashLight()
-    {
-        float statLight = UserPreferences.instance.playerData.statLight;
-
-        flashLight.intensity = intensity.initValue + (intensity.multiplyValue * statLight);
-        flashLight.pointLightOuterRadius = radiusOuter.initValue + (radiusOuter.multiplyValue * statLight);
-        flashLight.pointLightOuterAngle = spotOuterAngle.initValue + (spotOuterAngle.multiplyValue * statLight);
-
-        float sizeX = colliderSizeX.initValue + (colliderSizeX.multiplyValue * statLight);
-        float sizeY = colliderSizeY.initValue + (colliderSizeY.multiplyValue * statLight);
+        float sizeX = colliderSizeX.initValue + (colliderSizeX.multiplyValue * lightDevice.Level);
+        float sizeY = colliderSizeY.initValue + (colliderSizeY.multiplyValue * lightDevice.Level);
 
         lightScanCollider.size = new Vector2(sizeX, sizeY);
-    }
-
-    public void RotateTo(Vector3 target)
-    {
-        Vector3 dir = target - targetRotation.position;
-        float angle = (Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg) + 90.0f;
-        Quaternion qAngle = Quaternion.AngleAxis(angle, Vector3.forward);
-        targetRotation.rotation = Quaternion.Slerp(targetRotation.rotation, qAngle, Time.deltaTime * bathyscaphe.data.rotationSpeed);
-    }
-
-    public void SetActiveFlashLights(bool value)
-    {
-        if (LevelManager.Instance.playEnds)
-            return;
-
-        flashLight.gameObject.SetActive(value);
     }
 }

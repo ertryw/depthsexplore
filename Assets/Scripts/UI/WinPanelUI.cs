@@ -65,11 +65,11 @@ public class WinPanelUI : MonoBehaviour
         congratulationPanel.gameObject.SetActive(false);
         imageBathyscaphe.gameObject.SetActive(false);
         
-        if (UserPreferences.instance.playerData.deepestLevel > controlData.depth)
+        if (UserPreferences.Instance.playerData.deepestLevel > controlData.depth)
         {
             congratulationPanel.gameObject.SetActive(true);
-            UserPreferences.instance.playerData.deepestLevel = (int)controlData.depth;
-            UserPreferences.instance.Save(); 
+            UserPreferences.Instance.playerData.deepestLevel = (int)controlData.depth;
+            UserPreferences.Instance.Save(); 
         }
         else
         {

@@ -6,16 +6,17 @@ using UnityEngine;
 public class RadarPing : MonoBehaviour
 {
     [SerializeField]
-    private AudioSource PingAudio;
-    private SpriteRenderer spriteRenderer;
+    private AudioSource pingAudio;
 
     [SerializeField]
     private Color dangerColor;
 
     [SerializeField]
     private Color goodColor;
+
+    private SpriteRenderer spriteRenderer;
     private TweenerCore<Color, Color, ColorOptions> tween;
-    
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -23,9 +24,9 @@ public class RadarPing : MonoBehaviour
 
     public void SetDisappearTimer(bool danger)
     {
-        PingAudio.Play();
+        pingAudio.Play();
 
-        if (UserPreferences.instance.playerData.statRadar > 0.5f)
+        if (UserPreferences.Instance.playerData.statRadar.value > 0.5f)
         {
             if (danger)
                 spriteRenderer.color = dangerColor;

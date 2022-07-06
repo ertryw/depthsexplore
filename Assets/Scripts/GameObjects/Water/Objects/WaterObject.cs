@@ -57,12 +57,12 @@ public abstract class WaterObject : MonoBehaviour
 
         int perCent = UnityEngine.Random.Range(0, 100);
 
-        if (perCent < rarityData.percents[0])    
+        if (perCent < rarityData.percents[0])
         {
             rarityType = RarityType.Common;
             SetSprite(commnonSprite);
         }
-        else if (perCent < rarityData.percents[0] + rarityData.percents[1]) 
+        else if (perCent < rarityData.percents[0] + rarityData.percents[1])
         {
             rarityType = RarityType.Rare;
             SetSprite(rareSprite);
@@ -73,6 +73,7 @@ public abstract class WaterObject : MonoBehaviour
             SetSprite(legendarySprite);
         }
     }
+
     public void SetCommonSprite()
     {
         spriteRenderer.sprite = commnonSprite;
@@ -81,8 +82,8 @@ public abstract class WaterObject : MonoBehaviour
     public void SetSprite(Sprite sprite)
     {
         if (sprite == null)
-           SetCommonSprite();
-            
+            SetCommonSprite();
+
         spriteRenderer.sprite = sprite;
     }
 
@@ -93,20 +94,19 @@ public abstract class WaterObject : MonoBehaviour
         if (isLight == false || pointsGainK == 0.0f)
             return;
 
-        if (scanningSlider != null)   
+        if (scanningSlider != null)
             scanningSlider.gameObject.SetActive(true);
-        
+
         if (canvas != null)
             canvas.gameObject.SetActive(true);
 
-        LevelManager.Instance.PlayScanningSound();
     }
 
     private void OnTriggerExit2D(Collider2D col)
     {
         bool isLight = col.gameObject.TryGetComponent(out Light2D light);
 
-        if (isLight == false|| pointsGainK == 0.0f)
+        if (isLight == false || pointsGainK == 0.0f)
             return;
 
         if (scanningSlider != null)
@@ -114,8 +114,6 @@ public abstract class WaterObject : MonoBehaviour
 
         if (canvas != null)
             canvas.gameObject.SetActive(false);
-
-        LevelManager.Instance.StopScanningSound();
     }
 
     private void OnTriggerStay2D(Collider2D other)
@@ -126,13 +124,12 @@ public abstract class WaterObject : MonoBehaviour
         if (scanningSlider != null)
             scanningSlider.value = scanTime;
 
-        scanTime += Time.fixedDeltaTime * (1 + UserPreferences.instance.playerData.statScanner);
+        scanTime += Time.fixedDeltaTime * (1 + UserPreferences.Instance.playerData.statScanner.value);
 
         if (scanTime >= scanDuration && toDestroy == false)
         {
             toDestroy = true;
             scannedEnd?.Invoke(this);
-            LevelManager.Instance.StopScanningSound();
             DestroyDestoryObject(0.5f, true);
         }
     }

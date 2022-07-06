@@ -65,7 +65,7 @@ public class DoRotate2D : MonoBehaviour
     {
         tween = transform.DORotate(Vector3.forward * angle, duration, rotateMode)
             .SetEase(ease)
-            .SetLoops(-1, LoopType.Yoyo); 
+            .SetLoops(-1, LoopType.Yoyo);
     }
 
     public void StopTween()

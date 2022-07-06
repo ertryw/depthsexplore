@@ -13,7 +13,7 @@ public class TextSavedStatUI : MonoBehaviour
 
     private void Update()
     {
-        object stat = UserPreferences.instance.playerData.GetField(statName);
+        object stat = UserPreferences.Instance.playerData.GetField(statName);
         statText.text = stat.ToString();
     }
 }

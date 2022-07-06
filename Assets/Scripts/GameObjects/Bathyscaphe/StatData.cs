@@ -10,9 +10,10 @@ public class StatData
     public float maxValue;
     public float increaseDelta;
     public float energyConsumption;
-    public float InitValue() 
+
+    public StatData Init()
     {
         value = initValue;
-        return value;
+        return this;
     }
 }
