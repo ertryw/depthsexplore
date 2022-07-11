@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startPoints: 5000
   upgradeCostMultiply: 500
-  energyStartMultiply: 1200
-  energyValue: 120
-  depth: 83.700676
+  energyStartMultiply: 200
+  energyValue: 20
+  depth: 51.976456
   rotationSpeed: 2
   rotationDuration: 0.5
   steeringSpeedMultiply: 30

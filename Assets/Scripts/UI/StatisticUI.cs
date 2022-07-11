@@ -31,7 +31,7 @@ public class StatisticUI : MonoBehaviour
     private string statFullName;
     public static Action<string, float> OnChange;
 
-    void Awake()
+    void Start()
     {
         statNameText.text = statName;
         statFullName = statPrefix + statName;

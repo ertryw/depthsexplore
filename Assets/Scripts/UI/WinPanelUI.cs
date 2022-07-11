@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -81,12 +82,12 @@ public class WinPanelUI : MonoBehaviour
 
     private void OnEnable()
     {
-        Bathyscaphe.Finished += ShowHidePanel;
+        BathyscapheEnergyControl.Finished += ShowHidePanel;
     }
 
     private void OnDisable()
     {
-        Bathyscaphe.Finished -= ShowHidePanel;
+        BathyscapheEnergyControl.Finished -= ShowHidePanel;
     }
 
     public void HidePanel()
@@ -100,12 +101,15 @@ public class WinPanelUI : MonoBehaviour
                 moveTween.Complete();
 
             moveTween = rectTransform.DOAnchorPos(hidePosition, 1f)
-                .OnComplete(() => gameObject.SetActive(false))
                 .SetEase(Ease.OutBack)
-                .OnComplete(() => onWinPanelComplete?.Invoke())
+                .OnComplete(HideComplete)
                 .SetAutoKill(false);
-
-            LevelManager.Instance.playEnds = false;
         }
+    }
+
+    private void HideComplete()
+    {
+        LevelManager.Instance.Finished = false;
+        onWinPanelComplete?.Invoke();
     }
 }

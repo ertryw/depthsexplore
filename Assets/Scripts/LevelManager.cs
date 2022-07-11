@@ -22,13 +22,15 @@ public class LevelManager : MonoBehaviour
     [SerializeField]
     public EarthData earthData;
 
-    public static LevelManager Instance { get; private set; }
-
-    [HideInInspector]
-    public bool playEnds = false;
-
     [SerializeField]
     private AudioClip scanningAudio;
+
+    private float globalLightIntesityInit;
+
+    public static LevelManager Instance { get; private set; }
+    public bool Finished { get; set; } = false;
+
+
 
     private void Awake()
     {
@@ -36,6 +38,9 @@ public class LevelManager : MonoBehaviour
             Destroy(this);
         else
             Instance = this;
+
+
+        globalLightIntesityInit = globalLigth.intensity;
     }
 
     private IEnumerator Start()
@@ -52,10 +57,10 @@ public class LevelManager : MonoBehaviour
     {
         float initIntensity = globalLigth.intensity;
 
-        while (globalLigth.intensity >= globalLightDarkIntense)
+        while (globalLigth.intensity >= globalLightDarkIntense && Finished == false)
         {
             float level = (Bathyscaphe.Instance.data.depth + earthData.depthWaterLevel) / 100;
-            globalLigth.intensity = Mathf.Lerp(initIntensity, 0, darkeningSpeed * level);
+            globalLigth.intensity = Mathf.Lerp(initIntensity, 0, Mathf.Abs(darkeningSpeed * level));
             yield return new WaitForEndOfFrame();
         }
     }
@@ -76,6 +81,9 @@ public class LevelManager : MonoBehaviour
 
     private void OnWin()
     {
+        Finished = true;
+        globalLigth.intensity = globalLightIntesityInit;
+
         Water[] waters = FindObjectsOfType<Water>();
 
         foreach (Water item in waters)
@@ -121,7 +129,5 @@ public class LevelManager : MonoBehaviour
             }
         }
     }
-    
-    public bool IsEnded() => playEnds;
 
 }

@@ -27,11 +27,16 @@ public class BathyscapheEngine : MonoBehaviour
         movement = new MyControl();
         movement.Enable();
 
-        horizontalEngine = Device.Init();
-        horizontalEngine.Setup(() => UserPreferences.Instance.playerData.statSteering.value, () => true, null);
+        horizontalEngine = new Device();
+        horizontalEngine.SetActiveDelegate = (x) => UserPreferences.Instance.playerData.statSteering.active = x;
+        horizontalEngine.LevelDelegate = () => UserPreferences.Instance.playerData.statSteering.value;
+        horizontalEngine.CanActivateDelegate = () => true;
 
-        verticalEngine = Device.Init();
-        verticalEngine.Setup(() => UserPreferences.Instance.playerData.statSteeringDown.value, () => true, null);
+
+        verticalEngine = new Device();
+        verticalEngine.LevelDelegate = () => UserPreferences.Instance.playerData.statSteeringDown.value;
+        verticalEngine.SetActiveDelegate = (x) => UserPreferences.Instance.playerData.statSteeringDown.active = x;
+        verticalEngine.CanActivateDelegate = () => true;
 
         StartCoroutine(EngineSound(audioDeltaSpeed));
     }
@@ -70,7 +75,10 @@ public class BathyscapheEngine : MonoBehaviour
         //     rb.velocity = new Vector2(rb.velocity.x, rb.velocity.normalized.y * maxYVelocity);
 
         if (Bathyscaphe.Instance.State is BathyscapeOnSurface)
+        {
+            move = Vector2.zero;
             return;
+        }
 
         move = movement.Bathyscaphe.Move.ReadValue<Vector2>();
         Vector2 power = new Vector2(forceMultiply.x * horizontalEngine.Level * move.x, forceMultiply.y * verticalEngine.Level * move.y);

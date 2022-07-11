@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class Bathyscaphe : MonoBehaviour
 {
-    public static event Action Finished;
     public static event Action SurfaceEntry;
     public static event Action DepthWaterEntry;
     public static event Action WaterEntry;
@@ -70,19 +69,20 @@ public class Bathyscaphe : MonoBehaviour
             _instance = this;
         }
 
-        SetOnSurface();
-
-        data.statLight.active = false;
-        data.statRadar.active = false;
-
         initPosition = transform.position;
         initParent = transform.parent;
     }
 
+    private void Start()
+    {
+        SetOnSurface();
+    }
+
     public void StartSwim()
     {
-        if (LevelManager.Instance.playEnds == false)
+        if (LevelManager.Instance.Finished == false)
         {
+            Debug.Log("StartSwim");
             OnStartSwim?.Invoke();
         }
     }
@@ -98,18 +98,16 @@ public class Bathyscaphe : MonoBehaviour
 
     private void OnEnable()
     {
-        WaterObject.scannedEnd += ScannedEnd;
+        WaterObject.ScannedEnd += ScannedEnd;
         WinPanelUI.onWinPanel += ResetBathyscaphe;
-
         UserPreferences.FirstPlay += FirstPlay;
         UserPreferences.NextPlay += NextPlay;
     }
 
     private void OnDisable()
     {
-        WaterObject.scannedEnd -= ScannedEnd;
+        WaterObject.ScannedEnd -= ScannedEnd;
         WinPanelUI.onWinPanel -= ResetBathyscaphe;
-
         UserPreferences.FirstPlay -= FirstPlay;
         UserPreferences.NextPlay -= NextPlay;
     }
@@ -123,14 +121,19 @@ public class Bathyscaphe : MonoBehaviour
         UserPreferences.Instance.playerData.statRadar = data.statRadar.Init();
         UserPreferences.Instance.playerData.statScanner = data.statScanner.Init();
         UserPreferences.Instance.playerData.statSteering = data.statSteering.Init();
-
-
         UserPreferences.Instance.Save();
     }
 
     private void NextPlay()
     {
         Debug.Log("nextPlay");
+
+        data.startPoints = UserPreferences.Instance.playerData.points;
+        data.statEnergy = UserPreferences.Instance.playerData.statEnergy;
+        data.statLight = UserPreferences.Instance.playerData.statLight;
+        data.statRadar = UserPreferences.Instance.playerData.statRadar;
+        data.statScanner = UserPreferences.Instance.playerData.statScanner;
+        data.statSteering = UserPreferences.Instance.playerData.statSteering;
     }
 
     private void ScannedEnd(WaterObject obj)
@@ -191,6 +194,7 @@ public class Bathyscaphe : MonoBehaviour
         if (State is BathyscapeOnSurface)
             return;
 
+        Debug.Log("set on surface");
         upgradeButton.interactable = true;
         State = new BathyscapeOnSurface(data.surfaceMaxVelocity);
 

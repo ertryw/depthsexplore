@@ -19,20 +19,19 @@ public class PlayerData
     public int points = 0;
     public int deepestLevel = 0;
 
-    public object GetField(string fieldName)
+    public T GetField<T>(string fieldName)
     {
         Type statType = GetType();
         FieldInfo field = statType.GetField(fieldName);
-        return field.GetValue(this);
+        return (T)field.GetValue(this);
     }
 
-    public (List<StatData> stat, List<FieldInfo> field) GetAllStatData()
+    public List<StatData> GetAllStatData()
     {
-        Type statType = typeof(BathyscapheData);
-        FieldInfo[] fields = statType.GetFields();
+        FieldInfo[] fields = this.GetType().GetFields();
         List<FieldInfo> statFields = fields.Where(x => x.Name.Contains("stat")).ToList();
         List<StatData> stats = statFields.Select(x => (StatData)x.GetValue(this)).ToList();
-        return (stats, statFields);
+        return stats;
     }
 
     public void SetStatValueField(string fieldName, float value)

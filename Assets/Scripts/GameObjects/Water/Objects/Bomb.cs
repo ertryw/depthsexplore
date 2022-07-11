@@ -22,7 +22,7 @@ public class Bomb : WaterObject
             {
                 bathyscaphe.data.energyValue -= energyTake;
                 Camera.main.DOShakePosition(0.5f, 2, 10, 10, true);
-                DestroyDestoryObject(0.01f, true);
+                DestroyObject(0.01f, true);
             }
         }
 

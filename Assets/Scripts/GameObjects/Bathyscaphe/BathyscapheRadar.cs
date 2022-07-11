@@ -35,8 +35,11 @@ public class BathyscapheRadar : MonoBehaviour
 
     private void Start()
     {
-        radar = Device.Init(pulseSpriteRenderer.transform);
-        radar.Setup(() => UserPreferences.Instance.playerData.statRadar.value, CanActive, null);
+        radar = new Device(pulseSpriteRenderer.transform);
+
+        radar.SetActiveDelegate = (x) => UserPreferences.Instance.playerData.statRadar.active = x;
+        radar.LevelDelegate = () => UserPreferences.Instance.playerData.statRadar.value;
+        radar.CanActivateDelegate = () => LevelManager.Instance.Finished == false;
 
         pulseColor = pulseSpriteRenderer.color;
         alreadyPingedColliderList = new List<Collider2D>();
@@ -44,21 +47,16 @@ public class BathyscapheRadar : MonoBehaviour
         audioSource.clip = sonarAudio;
     }
 
-    private bool CanActive()
-    {
-        return LevelManager.Instance.IsEnded() == false;
-    }
-
     private void OnEnable()
     {
-        ButtonControl.OnChange += OnControlChange;
-        Bathyscaphe.Finished += OnPlayEnd;
+        ButtonControl.Changed += OnControlChange;
+        BathyscapheEnergyControl.Finished += OnPlayEnd;
     }
 
     private void OnDisable()
     {
-        ButtonControl.OnChange -= OnControlChange;
-        Bathyscaphe.Finished -= OnPlayEnd;
+        ButtonControl.Changed -= OnControlChange;
+        BathyscapheEnergyControl.Finished -= OnPlayEnd;
     }
 
     private void OnPlayEnd()

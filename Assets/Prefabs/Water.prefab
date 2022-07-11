@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8539060667204629671}
   - component: {fileID: 8539060667204629664}
   - component: {fileID: 8539060667204629665}
-  - component: {fileID: 1162038712376534654}
+  - component: {fileID: 2278093502174557535}
   m_Layer: 0
   m_Name: Water
   m_TagString: Untagged
@@ -126,7 +126,7 @@ MonoBehaviour:
   - {fileID: -838354208746681819, guid: 65dc8f24f9665f54ab51220181d00a1c, type: 3}
   - {fileID: -838354208746681819, guid: d0fa58c7c8a00e54b83768bf97fdcce6, type: 3}
   distanceToBathyscaphe: 0
---- !u!61 &1162038712376534654
+--- !u!61 &2278093502174557535
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -136,7 +136,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}

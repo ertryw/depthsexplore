@@ -79,7 +79,7 @@ public class Water : MonoBehaviour
 
         distanceToBathyscaphe = Vector3.Distance(bathyscaphe.transform.position, transform.position);
 
-        if (LevelManager.Instance.playEnds)
+        if (LevelManager.Instance.Finished)
             return;
 
         if (distanceToBathyscaphe < 10 && bathyscapheIn == false)
@@ -96,7 +96,7 @@ public class Water : MonoBehaviour
         foreach (WaterObject item in waterObjects)
         {
             if (item != null)
-                item.DestroyDestoryObject(0.01f, false);
+                item.DestroyObject(0.01f, false);
         }
     }
 
@@ -159,7 +159,7 @@ public class Water : MonoBehaviour
                 continue;
 
             Vector2 randomPosition = UnityEngine.Random.insideUnitCircle * radius;
-            Vector3 newPosition = transform.position + new Vector3(randomPosition.x, randomPosition.y, 0);
+            Vector3 newPosition = transform.position + new Vector3(randomPosition.x, randomPosition.y, -2f);
 
             waterObjects.Add(Instantiate(objectsToInstantiate, newPosition, Quaternion.identity, transform.parent));
             spawned++;

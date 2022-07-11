@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 using Lean.Touch;
@@ -14,6 +15,8 @@ public class StatIncrease
 
 public class BathyscapheLightControl : MonoBehaviour
 {
+    [SerializeField]
+    private bool autoFucusing;
 
     [SerializeField]
     private Light2D flashLight;
@@ -39,28 +42,74 @@ public class BathyscapheLightControl : MonoBehaviour
     private bool fingerDown;
     private TweenerCore<Quaternion, Quaternion, NoOptions> rotateTween;
     private Device lightDevice;
+    private WaterObject focusedWaterObject;
 
     private void Start()
     {
-        lightDevice = Device.Init(flashLight.transform);
-        lightDevice.Setup(() => UserPreferences.Instance.playerData.statLight.value, () => !LevelManager.Instance.IsEnded(), UpgradeFlashLight); 
+        lightDevice = new Device(flashLight.transform);
+
+        lightDevice.SetActiveDelegate = (x) => UserPreferences.Instance.playerData.statLight.active = x;
+        lightDevice.LevelDelegate = () => UserPreferences.Instance.playerData.statLight.value;
+        lightDevice.CanActivateDelegate = () => LevelManager.Instance.Finished == false;
+        lightDevice.UpgradeDelegate = UpgradeFlashLight;
+
         lightDevice.Active = Bathyscaphe.Instance.data.statLight.active;
+
+        if (autoFucusing)
+            StartCoroutine(AutoFocusing());
     }
 
     private void OnEnable()
     {
         LeanTouch.OnFingerUpdate += OnFingerMove;
-        ButtonControl.OnChange += OnControlChange;
+        ButtonControl.Changed += OnControlChange;
         StatisticUI.OnChange += OnStatChange;
-        Bathyscaphe.Finished += OnPlayEnd;
+        BathyscapheEnergyControl.Finished += OnPlayEnd;
+
+        if (autoFucusing)
+        {
+            WaterObject.Click += OnClick;
+            WaterObject.UnClick += OnUnClick;
+        }
     }
 
     private void OnDisable()
     {
         LeanTouch.OnFingerUpdate -= OnFingerMove;
-        ButtonControl.OnChange -= OnControlChange;
+        ButtonControl.Changed -= OnControlChange;
         StatisticUI.OnChange -= OnStatChange;
-        Bathyscaphe.Finished -= OnPlayEnd;
+        BathyscapheEnergyControl.Finished -= OnPlayEnd;
+
+        if (autoFucusing)
+        {
+            WaterObject.Click -= OnClick;
+            WaterObject.UnClick -= OnUnClick;
+        }
+    }
+
+    private void OnClick(WaterObject obj)
+    {
+        Debug.Log("Click");
+        focusedWaterObject = obj;
+    }
+
+    private void OnUnClick(WaterObject obj)
+    {
+        Debug.Log("UnClick");
+        focusedWaterObject = null;
+    }
+
+    private IEnumerator AutoFocusing()
+    {
+        while (true)
+        {
+            yield return new WaitForEndOfFrame();
+
+            if (focusedWaterObject == null)
+                continue;
+            
+            flashLight.transform.parent.RotateTo2D(focusedWaterObject.transform.position, Bathyscaphe.Instance.data.rotationSpeed);
+        }
     }
 
     private void OnPlayEnd()
@@ -86,6 +135,9 @@ public class BathyscapheLightControl : MonoBehaviour
 
     private void OnFingerMove(LeanFinger obj)
     {
+        if (obj.IsOverGui || focusedWaterObject != null)
+            return;
+
         flashLight.transform.parent.RotateTo2D(obj.GetWorldPosition(1.0f), Bathyscaphe.Instance.data.rotationSpeed);
     }
 

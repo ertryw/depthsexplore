@@ -19,8 +19,7 @@ public class BathyscapheData : ScriptableObject
 
     [Space(10)]
     public float rotationSpeed;
-    public float rotationDuration;
-    public float steeringSpeedMultiply;
+
     [Space(10)]
     public float surfaceMaxVelocity;
     public float waterMaxVelocity;

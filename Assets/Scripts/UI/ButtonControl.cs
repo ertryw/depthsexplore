@@ -5,8 +5,6 @@ using UnityEngine.UI;
 [Serializable]
 public class ButtonControl : MonoBehaviour
 {    
-    [SerializeField]
-    private BathyscapheData controlData;
     private StatData stat;
     
     public Button button;
@@ -15,30 +13,37 @@ public class ButtonControl : MonoBehaviour
     public Sprite ImageOff;
 
     public string statName;
-    public static Action<string, bool> OnChange;
+    public static Action<string, bool> Changed;
     
     public void SetActive(bool value)
     {
         image.sprite = value ? ImageOn : ImageOff;
     }
+
+    private void Awake()
+    {
+        StatData stat = UserPreferences.Instance.playerData.GetField<StatData>(statName);
+        SetActive(stat.active);
+    }
+
     private void OnEnable()
     {
-        Bathyscaphe.SurfaceEntry += Reset;
+        Bathyscaphe.SurfaceEntry += ResetControl;
     }
 
     private void OnDisable()
     {
-        Bathyscaphe.SurfaceEntry -= Reset;
+        Bathyscaphe.SurfaceEntry -= ResetControl;
     }
 
-    private void Reset()
+    private void ResetControl()
     {
         SetActive(false);
     }
 
     public void OnClick()
     {
-        StatData stat = controlData.GetField<StatData>(statName);
+        StatData stat = UserPreferences.Instance.playerData.GetField<StatData>(statName);
         
         if (stat.value == 0.0f)
             return;
@@ -49,13 +54,7 @@ public class ButtonControl : MonoBehaviour
             stat.active = true;
 
         SetActive(stat.active);
-        controlData.SetField(statName, stat);
-        OnChange?.Invoke(statName, stat.active);
+        Changed?.Invoke(statName, stat.active);
     }
 
-    private void Awake()
-    {
-        StatData stat = controlData.GetField<StatData>(statName);
-        SetActive(stat.active);
-    }
 }

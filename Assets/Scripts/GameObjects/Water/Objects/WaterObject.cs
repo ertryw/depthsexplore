@@ -12,6 +12,10 @@ public enum RarityType
 
 public abstract class WaterObject : MonoBehaviour
 {
+    public static event Action<WaterObject> ScannedEnd;
+    public static event Action<WaterObject> Click;
+    public static event Action<WaterObject> UnClick;
+
     [SerializeField]
     public bool bomb;
 
@@ -43,7 +47,6 @@ public abstract class WaterObject : MonoBehaviour
 
     private bool toDestroy;
     private float scanTime;
-    public static Action<WaterObject> scannedEnd;
 
     private void Awake()
     {
@@ -72,6 +75,16 @@ public abstract class WaterObject : MonoBehaviour
             rarityType = RarityType.Legendary;
             SetSprite(legendarySprite);
         }
+    }
+
+    public void Select()
+    {
+        Click?.Invoke(this);
+    }
+
+    public void DeSelect()
+    {
+        UnClick?.Invoke(this);
     }
 
     public void SetCommonSprite()
@@ -118,7 +131,7 @@ public abstract class WaterObject : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        if (pointsGainK == 0.0f)
+        if (pointsGainK == 0.0f || scanningSlider.gameObject.activeSelf == false)
             return;
 
         if (scanningSlider != null)
@@ -129,12 +142,12 @@ public abstract class WaterObject : MonoBehaviour
         if (scanTime >= scanDuration && toDestroy == false)
         {
             toDestroy = true;
-            scannedEnd?.Invoke(this);
-            DestroyDestoryObject(0.5f, true);
+            ScannedEnd?.Invoke(this);
+            DestroyObject(0.5f, true);
         }
     }
 
-    public void DestroyDestoryObject(float speed, bool playSound)
+    public void DestroyObject(float speed, bool playSound)
     {
         transform.DOScale(0, speed)
             .SetEase(Ease.InBack)
@@ -143,6 +156,7 @@ public abstract class WaterObject : MonoBehaviour
 
     private IEnumerator PrepareToDestory(bool playSound)
     {
+
         if (playSound)
         {
             OnDestoryClip.Play();
@@ -152,7 +166,6 @@ public abstract class WaterObject : MonoBehaviour
         }
 
         Destroy(gameObject);
-        yield return new WaitForEndOfFrame();
     }
 
 }

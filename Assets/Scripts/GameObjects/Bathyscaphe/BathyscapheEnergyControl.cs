@@ -1,23 +1,31 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using TMPro;
 using UnityEngine;
 
 public class BathyscapheEnergyControl : MonoBehaviour
 {
+    public static event Action Finished;
+
     [SerializeField]
     private TextMeshProUGUI energyValueText;
 
     [SerializeField]
     private TextMeshProUGUI energyConsumptionValueText;
 
+    public float EnergyConsumption
+    {
+        get
+        {
+            var stats = UserPreferences.Instance.playerData.GetAllStatData();
+            return stats.Where(x => x.active).Sum(x => x.energyConsumption);
+        }
+    }
 
     private void Start()
     {
-        Bathyscaphe.Instance.data.energyValue = Bathyscaphe.Instance.data.energyStartMultiply * Bathyscaphe.Instance.data.statEnergy.value;
-        StartCoroutine(EnergyConsumption());
+        ResetEnergy();
     }
 
     private void OnEnable()
@@ -30,6 +38,17 @@ public class BathyscapheEnergyControl : MonoBehaviour
         StatisticUI.OnChange -= OnStatChange;
     }
 
+    public void StartEnergyConsumption()
+    {
+        StartCoroutine(EnergyConsumptionLoop());
+    }
+
+    private void ResetEnergy()
+    {
+        Bathyscaphe.Instance.data.energyValue = Bathyscaphe.Instance.data.energyStartMultiply * Bathyscaphe.Instance.data.statEnergy.value;
+        EnergyStatsShow(0.0f);
+    }
+
     private void OnStatChange(string statName, float arg2)
     {
         if (statName != "statEnergy")
@@ -38,20 +57,30 @@ public class BathyscapheEnergyControl : MonoBehaviour
         Bathyscaphe.Instance.data.energyValue = Bathyscaphe.Instance.data.energyStartMultiply * Bathyscaphe.Instance.data.statEnergy.value;
     }
 
-    private IEnumerator EnergyConsumption()
+    private IEnumerator EnergyConsumptionLoop()
     {
         while (true)
         {
-            (List<StatData> stat, List<FieldInfo> field) d = UserPreferences.Instance.playerData.GetAllStatData();
-            float energyConsumption = d.stat.Where(x => x.active).Sum(x => x.energyConsumption);
-
+            float energyConsumption = EnergyConsumption;
             Bathyscaphe.Instance.data.energyValue -= energyConsumption / 10;
+
+            if (Bathyscaphe.Instance.data.energyValue <= 0)
+            {
+                ResetEnergy();
+                Finished?.Invoke();
+                break;
+            }
 
             yield return new WaitForSecondsRealtime(0.1f);
 
-            energyValueText.text = ((int)Bathyscaphe.Instance.data.energyValue).ToString();
-            energyConsumptionValueText.text = energyConsumption.ToString();
+            EnergyStatsShow(energyConsumption);
         }
+    }
+
+    private void EnergyStatsShow(float energyConsumption)
+    {
+        energyValueText.text = ((int)Bathyscaphe.Instance.data.energyValue).ToString();
+        energyConsumptionValueText.text = energyConsumption.ToString();
     }
 
 }
